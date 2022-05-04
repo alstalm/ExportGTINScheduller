@@ -1,5 +1,6 @@
 # Default ignored files
 params.yaml
-raw_html.html
+params.yaml
 __pycache__
 .idea
+/output

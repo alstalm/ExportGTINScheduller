@@ -97,7 +97,7 @@ def preliminary_single_check(current_check_result, negative_output_message, prev
 
 def preliminary_check_set(args):
 
-    go_to_next_check, output_message = preliminary_single_check(current_check_result=check_input_file_format(str(args.file.name)), #TODO для работы через консоль - вернуть атрибут.name
+    go_to_next_check, output_message = preliminary_single_check(current_check_result=check_input_file_format(str(args.file.name)), #TODO для работы через консоль - вернуть атрибут
                                                                 negative_output_message=' - входной файл должен содержать столбцы \'GTIN\' и \'AccountId\'')
 
     # проверка что указанный для сохранения экспортируемых файлов путь существует
@@ -114,7 +114,7 @@ def preliminary_check_set(args):
 
     # проверка расширения выходного файла.  ЭТА ПРОВЕРКА  ДОЛЖНА БЫТЬ ПОСЛЕДНЕЙ. ЕЕ НЕЛЬЗЯ СКИПАТЬ!
     go_to_next_check, output_message = preliminary_single_check(previous_check_passed=go_to_next_check,
-                                                                          current_check_result=check_input_file_extension(args.file.name), #TODO для работы через консоль - вернуть атрибут .name
+                                                                          current_check_result=check_input_file_extension(args.file.name), #TODO для работы через консоль - вернуть атрибут
                                                                           previous_output_message=output_message,
                                                                           negative_output_message=' - формат выходного файла должен быть .csv')
 
@@ -130,14 +130,15 @@ def launch_scheduller(args):
     print('', )
     if all_checks_passed:
         print(output_message)
-        export = Export(full_path_to_input_file = args.file.name, #TODO для работы через консоль - вернуть атрибут ,
+        export = Export(full_path_to_input_file = args.file.name, #TODO для работы через консоль - вернуть атрибут .name,
                         path_to_file_to_export = args.path,
                         start_time = args.start_time,
                         sleep_time = args.sleep_time,
                         chunk = args.chunk,
-                        verbose = args.verbose)
+                        verbose = args.verbose,
+                        offset = args.offset)
 
-        export.scheduller()
+        export.delaystart()
 
     else:
         print('В процессе предварительных проверок обнаружены ошибки:\n')
@@ -157,13 +158,15 @@ def parse_args():
     parser = argparse.ArgumentParser(formatter_class=RawDescriptionHelpFormatter, description=general_description)
 
     parser.add_argument("file", type=argparse.FileType('r'), help='''Входной файл.''')
-    parser.add_argument("-p", "--path", help='''Директория для подготовленных к отправке файлов''', default=None, type=str,)
+    parser.add_argument("-pt", "--path", help='''Директория для подготовленных к отправке файлов''', default=None, type=str,)
     parser.add_argument("-st", "--start_time",
-                        help="Время начала экспорта. Формат: '2022-03-21T20:10:50'. Если время указано в прошлом или не указано, то экспорт начнется сразу после старта.",
+                        help="Время начала экспорта. Формат: 'YYYY-MM-DDTHH:MM:SS'. Если время указано в прошлом или не указано, то экспорт начнется сразу после старта.",
                         default='2000-01-01T00:00:00', type=str)
     parser.add_argument("-sl", "--sleep_time", help="Время задержки между отправками. (мин.). Значение по умолчанию - 10", default=10, type=int)
-    parser.add_argument("-c", "--chunk", help="Размер чанка (порции для разбивки исходного файла). Значение по умолчанию - 10000", default=10000,  type=int) # без ACTION добавляет строчными буквами
-    parser.add_argument("-v", "--verbose", help="Отображать текущий процесс парсинга GS1 RUS", action='store_true')
+    parser.add_argument("-ch", "--chunk", help="Размер чанка (порции для разбивки исходного файла). Значение по умолчанию - 10000", default=10000,  type=int) # без ACTION добавляет строчными буквами
+    parser.add_argument("-of", "--offset", help="Смещение от начала исходнго файла. При продолжении экспорта чанками, необходимо указывать второе число из названия последнего отгруженного файла. "
+                                                "Например, если отправлено 3 чанка по 10000 из 50000, то при следующем запуске данному аргументу необходимо передать 30000", type=int, default=0,)
+    parser.add_argument("-vb", "--verbose", help="Отображать текущий процесс парсинга GS1 RUS", action='store_true')
 
     parser.set_defaults(func=launch_scheduller)
 
@@ -176,13 +179,14 @@ def main():
 
 # ГОТОВО. ФРАГМЕНТ ДЛЯ ОТЛАДКИ
 if __name__ == "__main__":
-    start_time = '2022-03-22T18:36:20'
-    sleep_time = 10
-    chunk = 2
+    offset = 0
+    start_time = '2022-04-06T21:00:00'
+    sleep_time = 11
+    chunk = 20
     verbose = False
     full_path_to_input_file = 'D:/CRPT/2022.02_февраль/экспорт по рассписанию/test.csv'
     #TODO добавить проверку для директории под экспорт
-    path_to_file_to_export = 'D:/CRPT/2022.02_февраль/экспорт по рассписанию/export1/'
+    path_to_file_to_export = 'D:/CRPT/2022.02_февраль/экспорт по рассписанию/export/'
 
     args = argparse.Namespace(
                     file=full_path_to_input_file,
@@ -190,5 +194,6 @@ if __name__ == "__main__":
                     start_time=start_time,
                     sleep_time=sleep_time,
                     chunk=chunk,
-                    verbose = verbose)
+                    verbose = verbose,
+                    offset=offset)
     launch_scheduller(args)

@@ -1,0 +1,10 @@
+login: 'aleksandr.Stalmakov@waveaccess.ru'
+password:  '%3Кm{sc!Tu}%№#' # ']379D#U7Yw!№;'
+login_url:  'https://xn--80a.xn----7sbabas4ajkhfocclk9d3cvfsa.xn--p1ai/auth/login' # 'https://a.stable01.nk.crpt.tech/auth/login'
+logout_url: 'https://xn--80a.xn----7sbabas4ajkhfocclk9d3cvfsa.xn--p1ai/auth/logout' # get
+landing_url:  'https://xn--80a.xn----7sbabas4ajkhfocclk9d3cvfsa.xn--p1ai/' # 'https://a.stable01.nk.crpt.tech/'
+export_url:  'https://xn--80a.xn----7sbabas4ajkhfocclk9d3cvfsa.xn--p1ai/goods-import/export-to-gs1' #'https://xn--80a.xn----7sbabas4ajkhfocclk9d3cvfsa.xn--p1ai/goods-import/export-to-gs1?debug=0' # 'https://a.stable01.nk.crpt.tech/goods-import/export-to-gs1'
+xpath1: '/html/head/meta[@name="csrf-token"]/@content' # для стейджинга нужен  альтернативный вариант token = tree.xpath('///meta[@name="csrf-token"]/@content[0]')
+xpath2: '/html/head/meta[@name="csrf-token"]/@content[0]' #
+
+
